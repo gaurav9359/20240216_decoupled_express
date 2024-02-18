@@ -1,0 +1,27 @@
+{
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "number",
+        "uniqueItems": true
+      },
+      "title": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
+      "price": {
+        "type": "number"
+      },
+      "stock": {
+        "type": "number"
+      },
+      "thumbnail": {
+        "type": "string"
+      }
+    },
+    "unique": ["id"],
+    "required": ["id", "title", "description", "price", "stock", "thumbnail"]
+  }
+  
