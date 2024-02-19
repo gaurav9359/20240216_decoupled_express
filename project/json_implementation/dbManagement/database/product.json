@@ -1,1 +1,43 @@
-[{"id":2,"title":"iPhone 10","description":"An apple mobile which is nothing like apple","price":549,"stock":94,"thumbnail":"https://cdn.dummyjson.com/product-images/1/thumbnail.jpg"},{"id":3,"title":"iPhone 10","description":"An apple mobile which is nothing like apple","price":549,"stock":94,"thumbnail":"https://cdn.dummyjson.com/product-images/1/thumbnail.jpg"}]
+[
+    {
+      "id": 2,
+      "title": "iPhone 10",
+      "description": "An apple mobile which is nothing like apple",
+      "price": 549,
+      "stock": 94,
+      "thumbnail": "https://cdn.dummyjson.com/product-images/1/thumbnail.jpg"
+    },
+    {
+      "id": 3,
+      "title": "iPhone 10",
+      "description": "An apple mobile which is nothing like apple",
+      "price": 549,
+      "stock": null,
+      "thumbnail": "https://cdn.dummyjson.com/product-images/1/thumbnail.jpg"
+    },
+    {
+      "id": 4,
+      "title": "iPhone 12",
+      "description": "An apple mobile which is nothing like apple",
+      "price": 549,
+      "stock": 94,
+      "thumbnail": "https://cdn.dummyjson.com/product-images/1/thumbnail.jpg"
+    },
+    {
+      "id": 5,
+      "title": "iPhone 13",
+      "description": "An apple mobile which is nothing like apple",
+      "price": 549,
+      "stock": 94,
+      "thumbnail": "https://cdn.dummyjson.com/product-images/1/thumbnail.jpg"
+    },
+    {
+      "id": 10,
+      "title": "iPhone 13",
+      "description": "An apple mobile which is nothing like apple",
+      "price": 549,
+      "stock": 94,
+      "thumbnail": "https://cdn.dummyjson.com/product-images/1/thumbnail.jpg"
+    }
+  ]
+  
