@@ -1,418 +1,208 @@
-  /**
- * Requirement- To create a basic database using Files and folders
- * Each folder can container any number of files and each files can
- * container n number of lines.
- * We need to perform crud operations on all these folder, files and
- * lines
+const { CANCELLED } = require("dns");
+const FileCrud= require("./crud")
+const fs = require("fs");
+const path = require("path");
+const prompt = require('prompt-sync')();
+
+let fileCrud= new FileCrud('curd');
+
+// Class to declare the database name and methods to perform crud operations
+module.exports = class Mydatabase {
+
+  /**Create record from req body
+   * @param {Object} object to insert inside Product
+   */
+ createRecord(fileName,objectToInsert){
+    fileCrud.createRecord(fileName,objectToInsert)
+ }
+
+ /**Read record from  id*/
+ readRecord(fileName,id){
+    return fileCrud.readRecord(fileName,id)
+ }
+
+ /**Update record from id and req body*/
+ updateRecord(fileName,id,newObject){
+  fileCrud.updateRecord(fileName,id,newObject)
+ }
+
+ /**Delete record from id */
+ deleteRecord(fileName,id){
+  fileCrud.deleteRecord(fileName,id)
+ }
+
+/**Checkout the product
+ * @param {Number} productId id of product
+ * @param {Number} quantity  quantity of the product
+ * @throws {Error} if the quantity to purchase > stock available
  */
-  const { CANCELLED } = require("dns");
-  const fs = require("fs");
-  const path = require("path");
-  const prompt = require('prompt-sync')();
-  
-  // Class to declare the database name and methods to perform crud operations
-  module.exports = class Mydatabase {
-    // constructor takes name of database as input and initialise the class
-    constructor(name = null) {
-      if (name === null || !name === "string") {
-        throw new Error("name is null");
-      }
-  
-      this.name = name;
-    }
-  
-    /** Submethod to validate the object
-    * @param {string} file name
-    * @param {object} object to validate
-    * @returns {boolean} True if the object follows the schema, false otherwise
-    */
-   validateSchema(fileName,objectToValidate) {
-    //get all the file schema objects
-    let productSchema=require(`./database/${fileName}_schema.json`)
-    let allProducts=require(`./database/${fileName}.json`)
-    let idArray=[]
-  
-    //populate the id in array
-    for(let singleObject in allProducts){
-      idArray.push(allProducts[singleObject].id)
-    }
-  
-     // Check if all required properties are present
-     for (const prop of productSchema.required) {
-       if (!(prop in objectToValidate)) {
-         console.log(`Property '${prop}' is missing.`);
-         return false;
-       }
-     }
-  
-     //check if id is unique or not
-     if(idArray.includes(objectToValidate.id)){
-      console.log("given Id already exists")
-      return false;
-     }
-  
-     // Check if the types of properties match the schema
-     for (const [key, value] of Object.entries(objectToValidate)) {
-       if (!(key in productSchema.properties)) {
-         console.log(`Property '${key}' is not allowed.`);
-         return false;
-       }
-       if (typeof value !== productSchema.properties[key].type) {
-         console.log(`Property '${key}' has incorrect type.`);
-         return false;
-       }
-      
-     }
-  
-     return true;
-   }
-  
-    /**Submethod to check if the string start with char and shouldn't have space
-     * @param {string} stringToCheck if it is valid or not
-     * @returns {boolean} true if the string is valid else false
-     */
-    validString(stringToCheck) {
-      // Regular expression to match strings with at least one letter and containing only letters and numbers
-      const regex = /^(?=.*[a-zA-Z])[a-zA-Z0-9]+$/;
-      // Check if the string matches the regular expression and does not start with a number
-      let ansToReturn =
-        regex.test(stringToCheck) && isNaN(parseInt(stringToCheck[0]));
-  
-      //check if the string have any "/" forward slash
-      for (
-        let indexOfString = 0;
-        indexOfString < stringToCheck.length;
-        indexOfString++
-      ) {
-        if (
-          stringToCheck[indexOfString] === `/` ||
-          stringToCheck[indexOfString] === `\\`
-        ) {
-          console.log("string contains "/" remove it")
-          return false;
-        }
-      }
-      return ansToReturn;
-    }
-  
-    /** Write record inside the file
-     * @param {string} fileName name of file in which data to be inserted
-     * @param {object} objectToInsert objec to be inserted n
-     * @throws {Error} if the file or folder is not present
-    */
-    createRecord(fileName,objectToInsert){
-  
-      // take all the json data from file
-      let allRecords = require(`./database/${fileName}.json`);
-  
-      // check wheater the object is valid or not
-      if(!this.validateSchema(fileName,objectToInsert)){
-          console.log("Please enter all the information required")
-          return;
-      }
-  
-      // Adding new data to allRecords object
-        allRecords.push(objectToInsert);
-  
-      // Writing to a file 
-        fs.writeFile(
-        `./dbManagement/database/${fileName}.json`,
-        JSON.stringify(allRecords),
-        err => {
-          // Checking for errors 
-          if (err) throw err;
-   
-          // Success 
-          console.log("Done writing");
-        });
-  
-    }
-  
-    /**read the record  from files
-     * @param {string} fileName name of file in which data to be inserted
-     * @throws {Error} if the file or folder is not present
-    */
-    readRecord(fileName,id){
-  
-      //take all the json data from file
-      let allData = require(`./database/${fileName}.json`);
-  
-      //lets take data to return 
-      let dataToReturn=[]
-  
-      // Loop through each object in the JSON data
-      allData.forEach((object, index) => {
-      
-      // Check if the key exists in the current object
-      if (object.id===id) {
-      // If the value exists, print it
-      dataToReturn.push(object)
-    }
-  });
-  return dataToReturn
+checkoutOrder(productId,order_details){
+  //take all the products from product.json
+  let allProducts=require(`./database/product.json`)
+  let idArray=[]
+
+  //populate the id in array
+  for(let singleObject in allProducts){
+    idArray.push(allProducts[singleObject].id)
   }
-  
-  /**update record inside the file
-  * @param {string} fileName name of file in which data to be inserted
-  * @throws {Error} if the file or folder is not present
-  */
-  updateRecord(fileName,id,newObject){
-  
-    // take all the json data from file
-    let allData = require(`./database/${fileName}.json`);
-  
-    //flag that if the id not found return that type valid id
-    let flag=false
-  
-    // Loop through each object in the JSON data
-    allData.forEach((object, index) => {
-  
-    // Check if the key exists in the current object
-    if (object.id===id) {
-  
-    //delete that index object
-    allData.splice(index, 1);
-    
-    //set the flag that id found
-    flag=true
-  
-    // check if the newObject is valid or not
-    if(!this.validateSchema(fileName,newObject)){
-      console.log("Please enter all the information required")
-      return;
+
+  //if the id of product not found then return error
+  if(!idArray.includes(productId)){
+      console.log("product not found")
+      return
   }
-    //if valid push new object
-    allData.push(newObject)
+
+  let indexOfProduct=-1
+  //get the index of productId from product
+  for(let key in allProducts){
+    if(allProducts[key].id===productId){
+      indexOfProduct=key
     }
-  });
-  
-  //if flag = false return that enter valid id to change
-  if(flag===false) {
-    console.log("enter valid id to change") 
+  }
+
+  //check if the stock is available or not
+  if(order_details.quantity>allProducts[indexOfProduct].stock){
+    console.log("insufficient stock available")
     return
   }
-    //write the entire json again in the file
-    fs.writeFile(
-      `./dbManagement/database/${fileName}.json`,
-      JSON.stringify(allData),
-      err => {
-        // Checking for errors 
-        if (err) throw err;
-  
-        // Success 
-        console.log("Updation Successfull");
-      });
-  
-  }
-  
-  /**Delete the record inside file
-  * @param {string} fileName name of file in which data to be inserted
-  * @throws {Error} if the file or folder is not present
-  */
-  deleteRecord(fileName,id2){
-  
-    // take all the json data from file
-    let allData = require(`./database/${fileName}.json`);
-  
-       // Loop through each object in the JSON data
-    allData.forEach((object, index) => {
-      if (object.hasOwnProperty('id') && object['id']===id2) {
-          //store the object without deleting
-          let objectToDelete= allData[index]
-  
-          // Remove the record from the array
-          allData.splice(index, 1); 
-  
-          return objectToDelete
-      }
+
+  //if the stock is available then reduce the quantity purchased
+  allProducts[indexOfProduct].stock-=order_details.quantity
+
+  //take all orders from order.json to append it
+  order_details["order_pId"]=productId
+  this.createRecord("order",order_details)
+
+
+  //write the product.json file again
+  fs.writeFile(
+    `./dbManagement/database/product.json`,
+    JSON.stringify(allProducts),
+    err => {
+      // Checking for errors 
+      if (err) throw err;
+
     });
-    
-     //write the entire json again in the file
-     fs.writeFile(
-      `./dbManagement/database/${fileName}.json`,
-      JSON.stringify(allData),
-      err => {
-        // Checking for errors 
-        if (err) throw err;
-  
-        // Success 
-        console.log("Deletion Successfull");
-      });
-  
+}
+
+/**cancel the product
+ * @param {Number} productId id of product
+ */
+cancelOrder(productId){
+  //take all the products from product.json
+  let allOrders=require(`./database/order.json`)
+  let idArray=[]
+
+  //populate the id in array
+  for(let singleObject in allOrders){
+    idArray.push(allOrders[singleObject].id)
   }
-  
-  /**Checkout the product
-   * @param {Number} productId id of product
-   * @param {Number} quantity  quantity of the product
-   * @throws {Error} if the quantity to purchase > stock available
-   */
-  checkoutOrder(productId,order_details){
-    //take all the products from product.json
-    let allProducts=require(`./database/product.json`)
-    let idArray=[]
-  
-    //populate the id in array
-    for(let singleObject in allProducts){
-      idArray.push(allProducts[singleObject].id)
-    }
-  
-    //if the id of product not found then return error
-    if(!idArray.includes(productId)){
-        console.log("product not found")
-        return
-    }
-  
-    let indexOfProduct=-1
-    //get the index of productId from product
-    for(let key in allProducts){
-      if(allProducts[key].id===productId){
-        indexOfProduct=key
-      }
-    }
-  
-    //check if the stock is available or not
-    if(order_details.quantity>allProducts[indexOfProduct].stock){
-      console.log("insufficient stock available")
+
+  console.log(idArray)
+  //if the id of product not found then return error
+  if(!idArray.includes(productId)){
+      console.log("product not found")
       return
-    }
-  
-    //if the stock is available then reduce the quantity purchased
-    allProducts[indexOfProduct].stock-=order_details.quantity
-  
-    //take all orders from order.json to append it
-    order_details["order_pId"]=productId
-    this.createRecord("order",order_details)
-  
-  
-    //write the product.json file again
-    fs.writeFile(
-      `./dbManagement/database/product.json`,
-      JSON.stringify(allProducts),
-      err => {
-        // Checking for errors 
-        if (err) throw err;
-  
-      });
   }
-  
-  /**cancel the product
-   * @param {Number} productId id of product
-   */
-  cancelOrder(productId){
-    //take all the products from product.json
-    let allOrders=require(`./database/order.json`)
-    let idArray=[]
-  
-    //populate the id in array
-    for(let singleObject in allOrders){
-      idArray.push(allOrders[singleObject].id)
+
+  let indexOfProduct=-1
+  //get the index of productId from order
+  for(let key in allOrders){
+    if(allOrders[key].id===productId){
+      indexOfProduct=key
     }
-  
-    console.log(idArray)
-    //if the id of product not found then return error
-    if(!idArray.includes(productId)){
-        console.log("product not found")
-        return
-    }
-  
-    let indexOfProduct=-1
-    //get the index of productId from order
-    for(let key in allOrders){
-      if(allOrders[key].id===productId){
-        indexOfProduct=key
-      }
-    }
-    //quantity to add in the product json
-    let quantityToAdd=allOrders[indexOfProduct].quantity
-    let objectDeleted= allOrders[indexOfProduct]
-  
-    //delete the indexOfProduct form order
-    allOrders.splice(indexOfProduct,1)
-    
-    //search for index of product that to be deleted in productjson
-    let allProducts=require(`./database/product.json`)
-  
-    for(let key in allProducts){
-      if(allProducts[key].id===productId){
-        indexOfProduct=key
-      }
-    }
-    allProducts[indexOfProduct].stock+=quantityToAdd
-  
-    //write in order.json file again
-    fs.writeFile(
-      `./dbManagement/database/order.json`,
-      JSON.stringify(allOrders),
-      err => {
-        // Checking for errors 
-        if (err) throw err;
-  
-      });
-  
-    //write the product.json file again
-    fs.writeFile(
-      `./dbManagement/database/product.json`,
-      JSON.stringify(allProducts),
-      err => {
-        // Checking for errors 
-        if (err) throw err;
-  
-      });
-  
-      //send the order cancelled into the call_order.json
-      let allCancelled= require(`./database/cancelled_order.json`)
-      objectDeleted.order_status="Cancelled"
-      allCancelled.push(objectDeleted)
-  
-      //write into the json again
-      fs.writeFile(
-        `./dbManagement/database/cancelled_order.json`,
-        JSON.stringify(allCancelled),
-        err => {
-          // Checking for errors 
-          if (err) throw err;
-    
-        });
-  
   }
+  //quantity to add in the product json
+  let quantityToAdd=allOrders[indexOfProduct].quantity
+  let objectDeleted= allOrders[indexOfProduct]
+
+  //delete the indexOfProduct form order
+  allOrders.splice(indexOfProduct,1)
   
-  /** To get the status of the product purchased
-   * @param {Number} productId 
-   * @returns {Object} having status
-   */
-  getStatus(productId){
-    // check if the product is CANCELLED
+  //search for index of product that to be deleted in productjson
+  let allProducts=require(`./database/product.json`)
+
+  for(let key in allProducts){
+    if(allProducts[key].id===productId){
+      indexOfProduct=key
+    }
+  }
+  allProducts[indexOfProduct].stock+=quantityToAdd
+
+  //write in order.json file again
+  fs.writeFile(
+    `./dbManagement/database/order.json`,
+    JSON.stringify(allOrders),
+    err => {
+      // Checking for errors 
+      if (err) throw err;
+
+    });
+
+  //write the product.json file again
+  fs.writeFile(
+    `./dbManagement/database/product.json`,
+    JSON.stringify(allProducts),
+    err => {
+      // Checking for errors 
+      if (err) throw err;
+
+    });
+
+    //send the order cancelled into the call_order.json
     let allCancelled= require(`./database/cancelled_order.json`)
+    objectDeleted.order_status="Cancelled"
+    allCancelled.push(objectDeleted)
+
+    //write into the json again
+    fs.writeFile(
+      `./dbManagement/database/cancelled_order.json`,
+      JSON.stringify(allCancelled),
+      err => {
+        // Checking for errors 
+        if (err) throw err;
   
-    for(let key in allCancelled){
-      if(allCancelled[key].id==productId){
-        return allCancelled[key]
-      }
+      });
+
+}
+
+/** To get the status of the product purchased
+ * @param {Number} productId 
+ * @returns {Object} having status
+ */
+getStatus(productId){
+  // check if the product is CANCELLED
+  let allCancelled= require(`./database/cancelled_order.json`)
+
+  for(let key in allCancelled){
+    if(allCancelled[key].id==productId){
+      return allCancelled[key]
     }
-  
-    //check if the product is placed
-    let allPlaced= require(`./database/order.json`)
-  
-    for(let key in allPlaced){
-      if(allPlaced[key].id==productId){
-        return allPlaced[key]
-      }
+  }
+
+  //check if the product is placed
+  let allPlaced= require(`./database/order.json`)
+
+  for(let key in allPlaced){
+    if(allPlaced[key].id==productId){
+      return allPlaced[key]
     }
-  
-    // if the order is not made or cancelled
-    console.log("no such order have been made or cancelled")
-  
   }
-  }
-  
-  // let gaurav= new Mydatabase('oreno');
-  
-  // // gaurav.deleteRecord('product',1)
-  // gaurav.updateRecord("order",2,{
-  //   "id": 2,
-  //   "order_date": "2023-08-25T15:00:00Z",
-  //   "order_address": "25, gulmohar nagar , nagpur",
-  //   "order_pId": 3,
-  //   "order_status": "dispatched",
-  //   "total_cost": 578
-  // })
+
+  // if the order is not made or cancelled
+  console.log("no such order have been made or cancelled")
+
+}
+}
+
+// let gaurav= new Mydatabase('oreno');
+
+// // gaurav.deleteRecord('product',1)
+// gaurav.updateRecord("order",2,{
+//   "id": 2,
+//   "order_date": "2023-08-25T15:00:00Z",
+//   "order_address": "25, gulmohar nagar , nagpur",
+//   "order_pId": 3,
+//   "order_status": "dispatched",
+//   "total_cost": 578
+// })

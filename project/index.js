@@ -1,5 +1,6 @@
 //import all the modules
-let Mydatabase= require('./dbManagement/index')
+// let Mydatabase= require('./json_implementation/dbManagement/index')
+let Mydatabase= require('./MongodbImplementation/index')
 const express = require('express')
 const app = express()
 const port = 3000
@@ -20,10 +21,10 @@ app.post('/product',(req, res) => {
 })
 
 // put the product into the database
-app.put('/product', (req, res) => {
+app.put('/product',async (req, res) => {
     try{
-    gaurav.updateRecord('product',Number(req.query.id),req.body)
-    res.send(gaurav.readRecord("product",Number(req.query.id)))
+    await gaurav.updateRecord('product',Number(req.query.id),req.body)
+    res.send(await gaurav.readRecord("product",Number(req.query.id)))
     }
     catch(e){
       res.send(e)
@@ -31,20 +32,23 @@ app.put('/product', (req, res) => {
 })
 
 //get product from id
-app.get('/product',(req,res)=>{
-  try{
-    res.send(gaurav.readRecord("product", Number(req.query.id)))
-  }
-  catch(e){
-    res.send(e)
-  }
-})
+app.get('/product',async (req, res) => {
+    try {
+      
+        let product = await gaurav.readRecord('product', Number(req.query.id));
+        console.log(product)
+        res.send(product);
+    } catch (e) {
+        console.error(e);
+        res.status(500).send(e);
+    }
+});
 
 //Delete product from product json
-app.delete('/product',(req,res)=>{
+app.delete('/product',async (req,res)=>{
   try{
-    let deleted_element= gaurav.readRecord("product",Number(req.query.id))
-    gaurav.deleteRecord('product',Number(req.query.id))
+    let deleted_element=await gaurav.readRecord("product",Number(req.query.id))
+    await gaurav.deleteRecord('product',Number(req.query.id))
     res.send(deleted_element)
   }
   catch(e){
@@ -87,6 +91,9 @@ app.get('/status',(req,res)=>{
     res.send(e)
   }
 })
+
+
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
