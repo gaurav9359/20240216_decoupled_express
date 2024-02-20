@@ -1,6 +1,6 @@
 //import all the modules
-// let Mydatabase= require('./json_implementation/dbManagement/index')
-let Mydatabase= require('./MongodbImplementation/index')
+let Mydatabase= require('./json_implementation/index')
+// let Mydatabase= require('./mongodbImplementation/index')
 const express = require('express')
 const app = express()
 const port = 3000
@@ -48,7 +48,7 @@ app.get('/product',async (req, res) => {
 app.delete('/product',async (req,res)=>{
   try{
     let deleted_element=await gaurav.readRecord("product",Number(req.query.id))
-    await gaurav.deleteRecord('product',Number(req.query.id))
+    await gaurav.deleteRecord('product',Number(req.body.id))
     res.send(deleted_element)
   }
   catch(e){
@@ -70,10 +70,11 @@ app.delete('/cancel',(req,res)=>{
 })
 
 //post the checkout
-app.post('/checkout',(req,res)=>{
+app.post('/checkout',async (req,res)=>{
   try{
     gaurav.checkoutOrder(Number(req.query.id),  req.body)
-    res.send(gaurav.readRecord('order',Number(req.body.id)))
+    let ObjectToReturn = await gaurav.readRecord('order',Number(req.body.id));
+    res.send(ObjectToReturn)
   }
   catch(e){
     res.send(e)

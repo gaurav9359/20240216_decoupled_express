@@ -76,7 +76,7 @@ checkoutOrder(productId,order_details){
 
   //write the product.json file again
   fs.writeFile(
-    `./dbManagement/database/product.json`,
+    `./json_implementation/database/product.json`,
     JSON.stringify(allProducts),
     err => {
       // Checking for errors 
@@ -131,7 +131,7 @@ cancelOrder(productId){
 
   //write in order.json file again
   fs.writeFile(
-    `./dbManagement/database/order.json`,
+    `./json_implementation/database/order.json`,
     JSON.stringify(allOrders),
     err => {
       // Checking for errors 
@@ -141,7 +141,7 @@ cancelOrder(productId){
 
   //write the product.json file again
   fs.writeFile(
-    `./dbManagement/database/product.json`,
+    `./json_implementation/database/product.json`,
     JSON.stringify(allProducts),
     err => {
       // Checking for errors 
@@ -156,7 +156,7 @@ cancelOrder(productId){
 
     //write into the json again
     fs.writeFile(
-      `./dbManagement/database/cancelled_order.json`,
+      `./json_implementation/database/cancelled_order.json`,
       JSON.stringify(allCancelled),
       err => {
         // Checking for errors 

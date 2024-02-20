@@ -5,7 +5,8 @@ const productSchema = new mongoose.Schema({
   id: {
     type: Number,
     unique: true,
-    required: true
+    required: true,
+    min:0
   },
   title: {
     type: String,
@@ -21,7 +22,8 @@ const productSchema = new mongoose.Schema({
   },
   stock: {
     type: Number,
-    required: true
+    required: true,
+    min:1
   },
   thumbnail: {
     type: String,

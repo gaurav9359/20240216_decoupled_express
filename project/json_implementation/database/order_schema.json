@@ -26,5 +26,5 @@
       "type": "number"
     }
   },
-  "required": ["id", "order_date", "order_address", "order_pId", "order_status", "total_cost"]
+  "required": ["id", "order_date", "order_address", "order_pId", "order_status", "total_cost","quantity"]
 }

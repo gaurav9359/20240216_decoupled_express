@@ -53,6 +53,11 @@
   
      // Check if the types of properties match the schema
      for (const [key, value] of Object.entries(objectToValidate)) {
+      if(typeof value=='number'){
+        if(!(value>=0)){
+          console.log(`property '${key}' cannot be negative`)
+          return false}
+      }
        if (!(key in productSchema.properties)) {
          console.log(`Property '${key}' is not allowed.`);
          return false;
@@ -116,7 +121,7 @@
           console.log(allRecords)
       // Writing to a file 
         fs.writeFile(
-        `./dbManagement/database/${fileName}.json`,
+        `./json_implementation/database/${fileName}.json`,
         JSON.stringify(allRecords),
         err => {
           // Checking for errors 
@@ -165,24 +170,27 @@
     let flag=false
   
     // Loop through each object in the JSON data
-    allData.forEach((object, index) => {
+    allData.forEach((objectToIterate, index) => {
   
     // Check if the key exists in the current object
-    if (object.id===id) {
+    if (objectToIterate.id===id) {
   
-    //delete that index object
-    allData.splice(index, 1);
+    //replace the items if present
+    for(const [key, value] of Object.entries(newObject)){
+      if(!objectToIterate.hasOwnProperty(key)){
+        console.log("Enter valid object to change")
+        return
+      }
+      objectToIterate[key]=value
+    }
+  
+    //if anything extra then throw error
     
     //set the flag that id found
     flag=true
   
-    // check if the newObject is valid or not
-    if(!this.validateSchema(fileName,newObject)){
-      console.log("Please enter all the information required")
-      return;
-  }
-    //if valid push new object
-    allData.push(newObject)
+  console.log(newObject)
+    
     }
   });
   
@@ -193,7 +201,7 @@
   }
     //write the entire json again in the file
     fs.writeFile(
-      `./dbManagement/database/${fileName}.json`,
+      `./json_implementation/database/${fileName}.json`,
       JSON.stringify(allData),
       err => {
         // Checking for errors 
@@ -229,7 +237,7 @@
     
      //write the entire json again in the file
      fs.writeFile(
-      `./dbManagement/database/${fileName}.json`,
+      `./json_implementation/database/${fileName}.json`,
       JSON.stringify(allData),
       err => {
         // Checking for errors 

@@ -29,7 +29,8 @@ const orderSchema = new mongoose.Schema({
     required: true
   },
   quantity: {
-    type: Number
+    type: Number,
+    min:1
   }
 });
 
